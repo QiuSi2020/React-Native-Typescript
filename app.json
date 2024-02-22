@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.qiusi2020.blankreactnative"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "eeb59d8a-b4be-4c52-a6eb-2d12db99018a"
+      },
+      "apiUrl": "https://example.com/api"
     }
   }
 }
