@@ -66,3 +66,50 @@ export function fromCode(value: string): string {
     alen = eval("String.fromCharCode(" + arr.join(',') + ")")
     return alen.toString();
 }
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// 存储数据
+// const storeData = async (key: string, value: string): Promise<void> => {
+//     try {
+//         await AsyncStorage.setItem(key, value);
+//         console.log('Data saved successfully');
+//     } catch (error) {
+//         console.error('Error saving data:', error);
+//     }
+// };
+
+export function storeData(key: string, value: string): void {
+    
+}
+
+export function retrieveData(key: string): string | null {
+    return ''
+}
+
+// export const aaa = () => {
+//     console.log(111)
+// }
+
+// 获取数据
+// const retrieveData = async (key: string): Promise<string | null> => {
+//     try {
+//         const value = await AsyncStorage.getItem(key);
+//         if (value !== null) {
+//             console.log('Retrieved data:', value);
+//             return value;
+//         } else {
+//             console.log('No data found for the key:', key);
+//             return null;
+//         }
+//     } catch (error) {
+//         console.error('Error retrieving data:', error);
+//         return null;
+//     }
+// };
+
+// 示例用法
+// storeData('myKey', 'myValue'); // 存储数据
+// retrieveData('myKey'); // 获取存储的数据
+
+// export { storeData, retrieveData}

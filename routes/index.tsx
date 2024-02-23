@@ -1,10 +1,9 @@
-import {lazy} from "react"
-import {Navigate} from 'react-router-dom'
-import {nanoid} from 'nanoid'// 生产随机id插件
-import {toCode, fromCode} from '@/utils/index'
-
-import {getCookie} from '@/utils/cookie'
-import {fakeRouteOne, fakeRouteTwo} from './fakeRoute'
+import { lazy } from "react"
+import { nanoid } from 'nanoid'// 生产随机id插件
+import { toCode, fromCode, retrieveData } from '@/utils'
+import { fakeRouteOne, fakeRouteTwo } from './fakeRoute'
+import { Navigate } from "react-router-native"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type MenuType = {
     id: string,
@@ -34,55 +33,54 @@ type lazyLoadProps = {
     [key: string]: React.LazyExoticComponent<React.ComponentType>
 }
 
-// vite动态导入插件(貌似只支持vue): https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
-// const moduleImport = import.meta.glob("../views/**/**.tsx")// 获取该文件夹下全部模块导入，懒加载方式
+const getToken = (): string | null => {
+    return retrieveData('TOKEN_999')
+}
 
-// 路由模块导入(懒加载方式)（伴有懒加载过程的动画）
-// const lazyLoad = (modulePath: string): React.ReactNode => {
-//     const Module = lazy(() => import(/* @vite-ignore */'../views/Modules/' + modulePath))
-//     return <Module />
-// }
+const getImportUrl = (path: string): string => {
+    return `@/views/${path}`
+}
 
-// 路由虽是动态，但vite不支持此种方式(主要是element方面,貌似支持Vue的)
 // 先将所有菜单项的路由都以来加载的方式导入一遍，后续通过返回的数据里的字符串作为键名获取对应的模块
 const MenuLazyLoad: lazyLoadProps = {// 菜单懒加载模块(先导入全部可能需要 菜单项 路由模块)
-    'ModuleOne/Introduce': lazy(() => import('@/views/Modules/' + 'ModuleOne/Introduce')),
-    'ModuleOne/PageOne': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageOne')),
-    'ModuleOne/PageTwo': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageTwo')),
-    'ModuleOne/PageThree': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageThree')),
-    'ModuleOne/PageDetail': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageDetail')),
-    'ModuleOne/ReduxView': lazy(() => import('@/views/Modules/' + 'ModuleOne/ReduxView')),
+    // 'ModuleOne/Introduce': lazy(() => import(getImportUrl('ModuleOne/Introduce'))),
+    // 'ModuleOne/Introduce': lazy(() => import('@/views/Modules/' + 'ModuleOne/Introduce')),
+    // 'ModuleOne/PageOne': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageOne')),
+    // 'ModuleOne/PageTwo': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageTwo')),
+    // 'ModuleOne/PageThree': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageThree')),
+    // 'ModuleOne/PageDetail': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageDetail')),
+    // 'ModuleOne/ReduxView': lazy(() => import('@/views/Modules/' + 'ModuleOne/ReduxView')),
 }
 
 const ViewLoad: lazyLoadProps = {// 页面懒加载模块(先导入全部可能需要 页面 路由模块)
-    'ModuleOne/PageFour': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageFour')),
-    'ModuleOne/SearchRouting': lazy(() => import('@/views/Modules/' + 'ModuleOne/SearchRouting')),
-    'ModuleOne/StateRouting': lazy(() => import('@/views/Modules/' + 'ModuleOne/StateRouting')),
+    // 'ModuleOne/PageFour': lazy(() => import('@/views/Modules/' + 'ModuleOne/PageFour')),
+    // 'ModuleOne/SearchRouting': lazy(() => import('@/views/Modules/' + 'ModuleOne/SearchRouting')),
+    // 'ModuleOne/StateRouting': lazy(() => import('@/views/Modules/' + 'ModuleOne/StateRouting')),
 }
 
-const getViewLoad = (val: string) => {
+const getViewLoad = (val: string): React.LazyExoticComponent<React.ComponentType<{}>> => {
     const Amodule = ViewLoad[val]
-    return <Amodule />
+    return <Amodule /> as unknown as React.LazyExoticComponent<React.ComponentType<{}>>
 }
 
 // 页面路由(手动引入)(这里才是实际引入到路由里的位置)
 const pageRoutes: allRouteProps[] = [
-    {
-        // element: lazyLoad('../views/Modules/ModuleOne/PageFour'),
-        path: '/pagefour',
-        element: getViewLoad('ModuleOne/PageFour'),
-        title: '页面四'
-    },
-    {
-        path: '/searchrouting',
-        element: getViewLoad('ModuleOne/SearchRouting'),
-        title: 'search 接收'
-    },
-    {
-        path: '/staterouting',
-        element: getViewLoad('ModuleOne/StateRouting'),
-        title: 'state 接收'
-    },
+    // {
+    //     // element: lazyLoad('../views/Modules/ModuleOne/PageFour'),
+    //     path: '/pagefour',
+    //     element: getViewLoad('ModuleOne/PageFour'),
+    //     title: '页面四'
+    // },
+    // {
+    //     path: '/searchrouting',
+    //     element: getViewLoad('ModuleOne/SearchRouting'),
+    //     title: 'search 接收'
+    // },
+    // {
+    //     path: '/staterouting',
+    //     element: getViewLoad('ModuleOne/StateRouting'),
+    //     title: 'state 接收'
+    // },
 ]
 
 // 隔断隔断隔断隔断隔断隔断(一般只需修改以上部分，不用改动此处以下部分)
@@ -90,10 +88,12 @@ const pageRoutes: allRouteProps[] = [
 // 隔断隔断隔断隔断隔断隔断(一般只需修改以上部分，不用改动此处以下部分)
 
 // 基础路由
-const Login = lazy(() => import('@/views/Login'))
-const Main = lazy(() => import('@/views/Main'))
-const NotFound = lazy(() => import('@/views/404'))
-const BlankView = lazy(() => import('@/views/Modules/ModuleOne/BlankView'))
+// const Login = lazy(() => import('@/common/Login'))
+// const Main = lazy(() => import('@/common/Main'))
+// const NotFound = lazy(() => import('@/common/404'))
+import Login from '@/common/Login'
+import Main from '@/common/Main'
+import NotFound from '@/common/404'
 
 // 初始路由
 const basisRoutes: RouteProps[] = [
@@ -110,6 +110,10 @@ const basisRoutes: RouteProps[] = [
         path: '/login',
         element: <Login />
     },
+    {
+        path: '/main',
+        element: <Main />
+    },
 ]
 
 let menu: MenuType[] = []// 菜单项结构数据（用于生成动态路由）
@@ -118,7 +122,7 @@ let menuRoutes: RouteProps[] = []// 菜单项路由导入
 
 let allRoute: flatMenuProps[] = []// 全部路由(扁平数组)
 
-const menuCalc = (arr: MenuType[]) => {
+const menuCalc = (arr: MenuType[]): void => {
     for(let i=0; i<arr.length; i++) {
         const item = arr[i]
         if (!item.pathUrl && item.childList) {       // 满足 是一个菜单
@@ -127,7 +131,6 @@ const menuCalc = (arr: MenuType[]) => {
             const Path_ = item.pathUrl.split('/')
             const path = '/' + Path_[Path_.length - 1].toLowerCase()
 
-            // const Element = lazy(() => import(/* @vite-ignore */'../views/Modules/' + item.pathUrl))
             const Element = MenuLazyLoad[item.pathUrl] 
 
             const ePath = {
@@ -142,7 +145,7 @@ const menuCalc = (arr: MenuType[]) => {
     }
 }
 
-const FlatMenuCalc = (arr: MenuType[]) => {
+const FlatMenuCalc = (arr: MenuType[]): void => {
     if (Object.prototype.toString.call(arr) === "[object Array]") {
         arr.forEach(v => {
             if (v.pathUrl && !v.childList) {// 判断是一条路由
@@ -161,9 +164,9 @@ const FlatMenuCalc = (arr: MenuType[]) => {
     }
 }
 
-const concatRoute = (arr: allRouteProps[]) => {
+const concatRoute = (arr: allRouteProps[]): void => {
     var NANOID: string[] = []
-    const NANOID_ = window.localStorage.getItem('NANOID')
+    const NANOID_ = retrieveData('NANOID')
 
     // 热更新时 nanoid() 会全部更新，而Tab栏选择的的项的key还是之前的
     // 所以需要存一组不会随热更新而改变的值
@@ -203,9 +206,9 @@ let firstPath: string = ''
 let routes: RouteProps[] = basisRoutes
 
 // 接口 获取路由数据(每次刷新页面执行一次)
-const getRoute = () => {
+const getRoute = (): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
-        const token = getCookie('token')
+        const token = getToken()
         if (!token) return// 如果token不存在(未登录)
         let res: MenuType[] = []
         if (token == 'admin12345') {
@@ -225,13 +228,13 @@ const getRoute = () => {
  * 未登录时，等待接口请求数据完成再进行跳转
  * 已是登录状态的，刷新页面先使用上次存储在本地的路由数据，待数据请求成功再更新路由
  */
-const updateRoute = (newRoute?: MenuType[]) => {
+const updateRoute = (newRoute?: MenuType[]): void => {
     
     if (newRoute && newRoute.length > 0) {
         window.localStorage.setItem('ROUTE', toCode(JSON.stringify(newRoute)))
         menu = newRoute
     } else {// 如果不是从接口获取的路由数据就先从本地取
-        const oldRoute = window.localStorage.getItem('ROUTE')
+        const oldRoute = retrieveData('ROUTE')
         if (oldRoute) {
             const newRoute_ = JSON.parse(fromCode(oldRoute))
             menu = newRoute_ ? newRoute_ : []
@@ -252,10 +255,6 @@ const updateRoute = (newRoute?: MenuType[]) => {
 
     // 组装 路由数据
     routes = [
-        {
-            path: '/blankview/:id/:name',// 举例用 页面
-            element: <BlankView />
-        },
         {
             path: '/login',
             element: <Login />
@@ -288,11 +287,11 @@ getRoute()// 获取路由数据并更新路由(未登录时不会执行)
 updateRoute()// 处理路由数据并更新路由
 
 // 路由重置
-const resetRoute = () => {
+const resetRoute = (): void => {
     routes = basisRoutes
 }
 
-export {routes, menu, allRoute, firstPath, resetRoute, getRoute}
+export {routes, menu, allRoute, firstPath, resetRoute, getRoute, getToken}
 
 // console.log('route整体路由', routes);
 // console.log('菜单项结构数据', menu);

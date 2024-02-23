@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "App.tsx",
   "scripts": {
-    "start": "cross-env REACT_APP_MODE=development expo start",
+    "start": "cross-env REACT_APP_MODE=dev expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --no-dev --web"
   },
   "dependencies": {
     "@expo/metro-runtime": "^3.1.3",
+    "@react-native-async-storage/async-storage": "^1.22.1",
     "axios": "^1.6.7",
     "expo": "~50.0.7",
     "expo-status-bar": "~1.11.1",
@@ -18,7 +19,7 @@
     "react-dom": "^18.2.0",
     "react-native": "0.73.4",
     "react-native-crypto": "^2.2.0",
-    "react-native-safe-area-context": "^4.8.2",
+    "react-native-safe-area-context": "^4.9.0",
     "react-native-web": "^0.19.10",
     "react-redux": "^9.1.0",
     "react-router-native": "^6.22.1",

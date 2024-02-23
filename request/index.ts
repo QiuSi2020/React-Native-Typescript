@@ -17,7 +17,6 @@ export default (url: string, data: any, headers: any, method: 'get' | 'post'): o
             reject(err)
         })
     })
-
 } 
 
 // app内不存在跨越问题

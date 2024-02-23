@@ -1,25 +1,25 @@
-import {useState, useEffect, useRef, Fragment} from 'react'
-import {useRoutes, useNavigate, useLocation} from 'react-router-dom'
+import { useState, useEffect, useRef, Fragment } from 'react'
+import { useRoutes, useNavigate, useLocation } from 'react-router-native'
 
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {routes} from './index'
+import { routes } from './index'
 
-import {getCookie} from '@/utils/cookie'
+import { getToken } from '@/routes'
 
-import {MyObject} from '@/types'
+import { AnyKey } from '@/types'
 
-import bus from '@/utils/bus'
+import { routerGuardBus } from '@/utils/bus'
 
-import {message} from "antd"
+// import {message} from "antd"
 
-function FrontendAuth(prosp: MyObject) {
+function FrontendAuth(prosp: AnyKey) {
 
     const {loginFlag} = prosp
 
     const element = useRoutes(routes)
 
-    const {pathname} = useLocation()
+    // const {pathname} = useLocation()
 
     // const flag: React.MutableRefObject<null | true> = useRef(null)
     // useEffect(() => {
@@ -31,12 +31,12 @@ function FrontendAuth(prosp: MyObject) {
     // })
 
     // 路由守卫
-    useEffect(() => {
-        if (window.location.pathname != '/login' && !getCookie('token')) {
-            bus.emit("clearLoginInfo")
-            message.info('请登录')
-        }
-    }, [pathname])
+    // useEffect(() => {
+    //     if (window.location.pathname != '/login' && !getToken()) {
+    //         // routerGuardBus.emit("clearLoginInfo")
+    //         // message.info('请登录')
+    //     }
+    // }, [pathname])
 
     // useEffect(() => {
     //     setKey(nanoid())
@@ -54,7 +54,7 @@ function FrontendAuth(prosp: MyObject) {
 }
 
 export default connect(
-    (state: MyObject) => ({
+    (state: AnyKey) => ({
         loginFlag: state.loginFlag
     }),
-)(FrontendAuth)
+) (FrontendAuth)
